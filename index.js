@@ -19,6 +19,11 @@ function verifySecret(req, res, next) {
     return res.status(403).json({ error: "SHIPPING_SECRET_KEY is missing or invalid" });
   }
 
+
+
+
+  
+
   if (key !== SECRET) {
     return res.status(403).json({ error: "Failed to authenticate SHIPPING_SECRET_KEY" });
   }
