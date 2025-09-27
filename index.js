@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
 const app = express();
 app.use(express.json());
 
+// 🔑 Middleware: verify SHIPPING_SECRET_KEY
 app.use((req, res, next) => {
   const key = req.headers["shipping_secret_key"];
 
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
   next();
 });
 
+// ✅ Create a Shipping Record
 app.post("/api/shipping/create", async (req, res) => {
   const { userId, productId, count } = req.body;
 
@@ -33,14 +35,17 @@ app.post("/api/shipping/create", async (req, res) => {
     return res.status(404).json({ error: "All fields required" });
   }
 
-  const shipping = await prisma.shipping.create({
-    data: { userId, productId, count },
-  });
-
-  return res.status(201).json(shipping);
+  try {
+    const shipping = await prisma.shipping.create({
+      data: { userId, productId, count },
+    });
+    return res.status(201).json(shipping);
+  } catch (err) {
+    return res.status(500).json({ error: "Database error" });
+  }
 });
 
-
+// ✅ Cancel a Shipping Record
 app.put("/api/shipping/cancel", async (req, res) => {
   const { shippingId } = req.body;
 
@@ -48,24 +53,31 @@ app.put("/api/shipping/cancel", async (req, res) => {
     return res.status(404).json({ error: "Missing shippingId" });
   }
 
-  const shipping = await prisma.shipping.update({
-    where: { id: shippingId },
-    data: { status: "cancelled" },
-  });
-
-  return res.status(200).json(shipping);
+  try {
+    const shipping = await prisma.shipping.update({
+      where: { id: shippingId },
+      data: { status: "cancelled" },
+    });
+    return res.status(200).json(shipping);
+  } catch (err) {
+    return res.status(500).json({ error: "Database error" });
+  }
 });
+
 
 app.get("/api/shipping/get", async (req, res) => {
   const { userId } = req.query;
 
-  const shippings = await prisma.shipping.findMany({
-    where: userId ? { userId: Number(userId) } : {},
-  });
-
-  return res.status(200).json(shippings);
+  try {
+    const shippings = await prisma.shipping.findMany({
+      where: userId ? { userId: Number(userId) } : {},
+    });
+    return res.status(200).json(shippings);
+  } catch (err) {
+    return res.status(500).json({ error: "Database error" });
+  }
 });
 
-// 🚀 Start server
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
