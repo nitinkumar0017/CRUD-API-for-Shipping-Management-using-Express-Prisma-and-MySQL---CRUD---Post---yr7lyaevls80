@@ -20,7 +20,7 @@ app.post ("/api/shipping/create",async(req,res)=>{
     const shipping = await prisma.Shipping.create({
       data:{userId,productId,count}
     });
-    return res.status(200).json(shipping);
+    return res.status(201).json(shipping);
 
   }catch(err){
     console.log(err)
