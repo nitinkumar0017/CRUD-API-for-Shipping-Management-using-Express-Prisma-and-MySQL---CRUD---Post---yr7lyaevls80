@@ -17,7 +17,7 @@ app.post ("/api/shipping/create",async(req,res)=>{
     if(!userId || !productId || !count){
       return res.status(404).json({error:"All fields required"})
     }
-    const shipping = await prisma.Shipping.create({
+    const shipping = await prisma.shipping.create({
       data:{userId,productId,count}
     });
     return res.status(201).json(shipping);
@@ -37,7 +37,7 @@ app.put("/api/shipping/cancel",async(req,res)=>{
         "error": "Missing shippingId"
       })
     }
-    const shipping = await prisma.Shipping.update({
+    const shipping = await prisma.shipping.update({
       where:{id:shippingId},
       data:{status: "cancelled"}
     })
@@ -53,11 +53,11 @@ app.get("/api/shipping/get",async(req,res)=>{
   try{
     const {userId} = req.query;
     if (!userId){
-      const shipping = await prisma.Shipping.findMany()
+      const shipping = await prisma.shipping.findMany()
       return res.status(200).json(shipping);
     }
 
-    const shipping = await prisma.user.findMany({where:{id:userId}})
+    const shipping = await prisma.shipping.findMany({where:{id:userId}})
     return res.status(200).json(shipping);
 
   }catch(err){
