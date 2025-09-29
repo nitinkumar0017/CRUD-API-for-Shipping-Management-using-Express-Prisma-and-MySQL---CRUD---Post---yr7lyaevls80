@@ -57,7 +57,7 @@ app.get("/api/shipping/get",async(req,res)=>{
       return res.status(200).json(shipping);
     }
 
-    const shipping = await prisma.shipping.findMany({where:{id:userId}})
+    const shipping = await prisma.shipping.findMany({where:{id:Number(userId)}})
     return res.status(200).json(shipping);
 
   }catch(err){
